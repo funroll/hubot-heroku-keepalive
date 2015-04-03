@@ -18,6 +18,8 @@
 
 module.exports = (robot) ->
   keepaliveUrl = process.env.HUBOT_HEROKU_KEEPALIVE_URL or process.env.HEROKU_URL
+  keepaliveUrl2 = process.env.HUBOT_HEROKU_KEEPALIVE_URL2
+
   if keepaliveUrl and not keepaliveUrl.match(/\/$/)
     keepaliveUrl = "#{keepaliveUrl}/"
 
@@ -44,6 +46,13 @@ module.exports = (robot) ->
           robot.emit 'error', err
         else
           robot.logger.info "keepalive pong: #{res.statusCode} #{body}"
+      robot.logger.info 'keepalive ping 2'
+      robot.http("#{keepaliveUrl2}").post() (err, res, body) =>
+        if err?
+          robot.logger.info "keepalive2 pong: #{err}"
+          robot.emit 'error', err
+        else
+          robot.logger.info "keepalive2 pong: #{res.statusCode} #{body}"
     , keepaliveInterval * 60 * 1000
   else
     robot.logger.info "hubot-heroku-keepalive is #{keepaliveInterval}, so not keeping alive"
